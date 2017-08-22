@@ -161,7 +161,13 @@ public class KJTree{
     /*
      Dynamic tree creation ------------------------------------------------------------------------------------------
      */
-    public init(parents: NSArray, childrenKey: String, expandableKey: String? = nil, key: String? = nil) {
+    public init(parents: NSArray,
+                childrenKey: String,
+                expandableKey: String? = nil,
+                key: String? = nil,
+                urlKey: String? = nil,
+                displayNameKey: String? = nil,
+                extraParamsKey: String? = nil) {
         
         for i in 0..<parents.count {
             
@@ -185,7 +191,37 @@ public class KJTree{
                     }
                 }
             }
-            
+
+            if let urlKeyConfirmed = urlKey {
+                if let key = parentConfirmed.object(forKey: urlKeyConfirmed) as? String {
+                    parentInstance.url = key
+                }else{
+                    if let keyAny = parentConfirmed.object(forKey: urlKeyConfirmed) {
+                        parentInstance.url = "\(keyAny)"
+                    }
+                }
+            }
+
+            if let displayNameKeyConfirmed = displayNameKey {
+                if let key = parentConfirmed.object(forKey: displayNameKeyConfirmed) as? String {
+                    parentInstance.displayName = key
+                }else{
+                    if let keyAny = parentConfirmed.object(forKey: displayNameKeyConfirmed) {
+                        parentInstance.displayName = "\(keyAny)"
+                    }
+                }
+            }
+
+            if let extraParamsKeyConfirmed = extraParamsKey {
+                if let key = parentConfirmed.object(forKey: extraParamsKeyConfirmed) as? String {
+                    parentInstance.extraParams = key
+                }else{
+                    if let keyAny = parentConfirmed.object(forKey: extraParamsKeyConfirmed) {
+                        parentInstance.extraParams = "\(keyAny)"
+                    }
+                }
+            }
+
             // check childs
             guard let childs = parentConfirmed.object(forKey: childrenKey) as? NSArray, childs.count != 0 else{
                 arrayParents.append(parentInstance)
@@ -199,7 +235,14 @@ public class KJTree{
                 parentInstance.isVisibility = true
             }
             
-            let childsAndExpandedState = self.addChildsInTree(childs: childs, childrenKey: childrenKey, expandableKey: expandableKey, key: key)
+            let childsAndExpandedState = self.addChildsInTree(childs: childs,
+                                                              childrenKey: childrenKey,
+                                                              expandableKey: expandableKey,
+                                                              key: key,
+                                                              urlKey: urlKey,
+                                                              displayNameKey: displayNameKey,
+                                                              extraParamsKey: extraParamsKey)
+            
             parentInstance.arrayChilds = childsAndExpandedState.0
             if parentInstance.isVisibility {
                 parentInstance.expandedRows = childsAndExpandedState.0.count + childsAndExpandedState.1
@@ -208,7 +251,13 @@ public class KJTree{
             arrayParents.append(parentInstance)
         }
     }
-    func addChildsInTree(childs: NSArray, childrenKey: String, expandableKey: String? = nil, key: String? = nil) -> ([Child], NSInteger){
+    func addChildsInTree(childs: NSArray,
+                         childrenKey: String,
+                         expandableKey: String? = nil,
+                         key: String? = nil,
+                         urlKey: String? = nil,
+                         displayNameKey: String? = nil,
+                         extraParamsKey: String? = nil) -> ([Child], NSInteger){
         
         var arrayOfChilds: [Child] = []
         var countOfExpandableRows = 0
@@ -224,6 +273,7 @@ public class KJTree{
             
             // get key
             let childInstance = Child()
+            
             if let idKeyConfirmed = key {
                 if let key = childConfirmed.object(forKey: idKeyConfirmed) as? String {
                     childInstance.key = key
@@ -235,6 +285,36 @@ public class KJTree{
                 
             }
             
+            if let urlKeyConfirmed = urlKey {
+                if let key = childConfirmed.object(forKey: urlKeyConfirmed) as? String {
+                    childInstance.url = key
+                }else{
+                    if let keyAny = childConfirmed.object(forKey: urlKeyConfirmed) {
+                        childInstance.url = "\(keyAny)"
+                    }
+                }
+            }
+            
+            if let displayNameKeyConfirmed = displayNameKey {
+                if let key = childConfirmed.object(forKey: displayNameKeyConfirmed) as? String {
+                    childInstance.displayName = key
+                }else{
+                    if let keyAny = childConfirmed.object(forKey: displayNameKeyConfirmed) {
+                        childInstance.displayName = "\(keyAny)"
+                    }
+                }
+            }
+
+            if let extraParamsKeyConfirmed = extraParamsKey {
+                if let key = childConfirmed.object(forKey: extraParamsKeyConfirmed) as? String {
+                    childInstance.extraParams = key
+                }else{
+                    if let keyAny = childConfirmed.object(forKey: extraParamsKeyConfirmed) {
+                        childInstance.extraParams = "\(keyAny)"
+                    }
+                }
+            }
+
             // check childs
             guard let childs = child?.object(forKey: childrenKey) as? NSArray, childs.count != 0 else{
                 arrayOfChilds.append(childInstance)
@@ -249,7 +329,14 @@ public class KJTree{
             }
             
             // get visible childs
-            let childsAndExpandedState = self.addChildsInTree(childs: childs, childrenKey: childrenKey, expandableKey: expandableKey, key: key)
+            let childsAndExpandedState = self.addChildsInTree(childs: childs,
+                                                              childrenKey: childrenKey,
+                                                              expandableKey: expandableKey,
+                                                              key: key,
+                                                              urlKey: urlKey,
+                                                              displayNameKey: displayNameKey,
+                                                              extraParamsKey: extraParamsKey)
+            
             childInstance.arrayChilds = childsAndExpandedState.0
             if childInstance.isVisibility {
                 childInstance.expandedRows = childsAndExpandedState.0.count + childsAndExpandedState.1
@@ -281,7 +368,7 @@ public class KJTree{
             // get parent instance and check childs of it, if yes go through it?
             let parent = arrayParents[i]
             
-            let node = Node(index: "\(i)", id: parent.key, givenIndex: parent.givenIndex)
+            let node = Node(index: "\(i)", id: parent.key, givenIndex: parent.givenIndex, urlKey: parent.url, displayNameKey: parent.displayName, extraParamsKey: parent.extraParams)
             arrayVisibles.append(node)
             
             var currentState: State = .none // State decision open, close or none.
@@ -310,7 +397,7 @@ public class KJTree{
             
             let childIndex = parentIndex + ".\(i)"
             
-            let node = Node(index: childIndex, id: child.key, givenIndex: child.givenIndex)
+            let node = Node(index: childIndex, id: child.key, givenIndex: child.givenIndex, urlKey: child.url, displayNameKey: child.displayName, extraParamsKey: child.extraParams)
             node.index = childIndex
             arrayVisibles.append(node)
             
@@ -605,13 +692,21 @@ public class Node {
     public var id: String = ""
     public var givenIndex: String = ""
     
+    //
+    public var url: String = ""
+    public var displayName: String = ""
+    public var extraParams: String = ""
+    
     public init() {
         
     }
-    public init(index: String, id: String, givenIndex: String) {
+    public init(index: String, id: String, givenIndex: String, urlKey: String, displayNameKey: String, extraParamsKey: String) {
         self.index = index
         self.id = id
         self.key = id
+        self.url = urlKey
+        self.displayName = displayNameKey
+        self.extraParams = extraParamsKey
         self.givenIndex = givenIndex
     }
     
@@ -655,13 +750,19 @@ public class Parent: Node{
         // print(arrayChilds)
     }
     
-    public init(key: String){
+    public init(key: String, urlKey: String, displayNameKey: String, extraParamsKey: String){
         super.init()
         super.key = key
+        super.url = urlKey
+        super.displayName = displayNameKey
+        super.extraParams = extraParamsKey
     }
-    public init(key: String ,expanded: Bool = false, childs: () -> [Child]) {
+    public init(key: String ,expanded: Bool = false, urlKey: String, displayNameKey: String, extraParamsKey: String, childs: () -> [Child]) {
         super.init()
         super.key = key
+        super.url = urlKey
+        super.displayName = displayNameKey
+        super.extraParams = extraParamsKey
         super.arrayChilds = childs()
         super.isVisibility = expanded
         if expanded {
@@ -687,13 +788,19 @@ public class Child: Node{
             super.expandedRows = count
         }
     }
-    public init(key: String){
+    public init(key: String, urlKey: String, displayNameKey: String, extraParamsKey: String){
         super.init()
         super.key = key
+        super.url = urlKey
+        super.displayName = displayNameKey
+        super.extraParams = extraParamsKey
     }
-    public init(key: String, expanded: Bool = false, subChilds: () -> [Child]) {
+    public init(key: String, urlKey: String, displayNameKey: String, extraParamsKey: String, expanded: Bool = false, subChilds: () -> [Child]) {
         super.init()
         super.key = key
+        super.url = urlKey
+        super.displayName = displayNameKey
+        super.extraParams = extraParamsKey
         super.arrayChilds = subChilds()
         
         // Check expanded status
