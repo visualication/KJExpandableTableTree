@@ -22,14 +22,12 @@ TODO: Add long description of the pod here.
 Provides a tableview cell expansion (expanding cell area - subcells'), you can expand cells up to level ∞-1. It's on Swift 3.0.
                        DESC
 
-  s.homepage         = 'https://github.com/KiranJasvanee/KJExpandableTableTree'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.homepage         = 'https://github.com/visualication/KJExpandableTableTree'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Kiran Jasvanee' => 'kiran.jasvanee@yahoo.com' }
-  s.source           = { :git => 'https://github.com/KiranJasvanee/KJExpandableTableTree.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.author           = { 'Kiran Jasvanee' => 'kiran.jasvanee@yahoo.com', 'Thorsten Binnewies' => 'thorsten.binnewies@posteo.de' }
+  s.source           = { :git => 'https://github.com/visualication/KJExpandableTableTree.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'KJExpandableTableTree/Classes/**/*'
   
